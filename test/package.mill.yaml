@@ -1,0 +1,7 @@
+extends: [ build.ScalaTests, TestModule.Munit ]
+mvnDeps:
+  - org.scalameta::munit:1.2.1
+forkEnv:
+  'THING_1': 'abc'
+  'THING_2': '123'
+  'THING_3': '1+1=2'
