@@ -7,55 +7,27 @@ jobs:
   build:
     runs-on: "ubuntu-latest"
     steps:
-      - name: Set BRANCH_VERSION
+      - name: Set LIBRARY_VERSION
         run: |
           TAG="${{ github.event.release.tag_name }}"
-          echo "BRANCH_VERSION=${TAG#v}" >> $GITHUB_ENV
+          echo "LIBRARY_VERSION=${TAG#v}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - uses: docker/setup-buildx-action@v3
-
-      - name: Import GPG key
-        env:
-          GPG_KEY: ${{ secrets.GPG_KEY }}
-        run: |
-          echo -n "$GPG_KEY" | gpg --batch --yes --import
-
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
-          cache: sbt
-
-      - name: Setup sbt launcher
-        uses: sbt/setup-sbt@v1
+          java-version: '25'
 
       - name: Run tests
-        run: sbt test
+        run: ./mill test
 
-      - name: Build + Sign
-        run: sbt publishSigned
+      - name: Publish
+        run: ./mill mill.javalib.SonatypeCentralPublishModule/
         env:
-          BRANCH_VERSION: ${{ env.BRANCH_VERSION }}
-          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
-
-      - name: ZIP
-        run: |
-          cd bundle
-          zip -r ../branch-${BRANCH_VERSION}.zip .
-        env:
-          BRANCH_VERSION: ${{ env.BRANCH_VERSION }}
-
-      - name: Upload
-        run: |
-          curl \
-            --request POST \
-            --header "Authorization: Bearer ${CENTRAL_TOKEN}" \
-            --form bundle=@branch-${BRANCH_VERSION}.zip \
-            "https://central.sonatype.com/api/v1/publisher/upload?publishingType=USER_MANAGED"
-        env:
-          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
-          BRANCH_VERSION: ${{ env.BRANCH_VERSION }}
+          MILL_PGP_PASSPHRASE: ${{ secrets.MILL_PGP_PASSPHRASE }}
+          MILL_PGP_SECRET_BASE64: ${{ secrets.MILL_PGP_SECRET_BASE64 }}
+          MILL_SONATYPE_PASSWORD: ${{ secrets.MILL_SONATYPE_PASSWORD }}
+          MILL_SONATYPE_USERNAME: ${{ secrets.MILL_SONATYPE_USERNAME }}

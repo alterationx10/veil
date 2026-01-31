@@ -12,47 +12,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: docker/setup-buildx-action@v3
-
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
-          cache: sbt
+          java-version: '25'
 
-      - name: Setup sbt launcher
-        uses: sbt/setup-sbt@v1
-
-      - name: blammo tests
-        run: sbt "testOnly *blammo*"
-
-      - name: friday tests
-        run: sbt "testOnly *friday*"
-
-      - name: hollywood tests
-        run: sbt "testOnly *hollywood*"
-
-      - name: keanu tests
-        run: sbt "testOnly *keanu*"
-
-      - name: lzy tests
-        run: sbt "testOnly *lzy*"
-
-      - name: macaroni tests
-        run: sbt "testOnly *macaroni*"
-
-      - name: mustachio tests
-        run: sbt "testOnly *mustachio*"
-
-      - name: piggy tests
-        run: sbt "testOnly *piggy*"
-
-      - name: spider tests
-        run: sbt "testOnly *spider*"
-
-      - name: ursula tests
-        run: sbt "testOnly *ursula*"
-
-      - name: veil tests
-        run: sbt "testOnly *veil*"
-
+      - name: Run tests
+        run: ./mill test
