@@ -1,5 +1,19 @@
-extends: ScalaModule
+extends: [ ScalaModule, SonatypeCentralPublishModule ]
 scalaVersion: 3.8.0
+jvmVersion: temurin:25
+publishVersion: 0.0.15
+artifactName: veil
+pomSettings:
+  description: A micro library to help with configs and environment variables in Scala applications.
+  organization: dev.alteration
+  url: https://github.com/alterationx10/veil
+  licenses: [ Apache 2 ]
+  versionControl: https://github.com/alterationx10/veil
+  developers:
+    - id: alterationx10
+      name: Mark Rudolph
+      email: mark@alteration.dev
+      url: https://github.com/alterationx10
 scalacOptions: [
   -no-indent,
   -rewrite,
